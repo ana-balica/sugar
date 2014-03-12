@@ -24,8 +24,15 @@ from gi.repository import Gdk
 from sugar3.graphics import style
 from sugar3.graphics.toolbutton import ToolButton
 
+from jarabe.model import bundleregistry
+from jarabe.journal.misc import launch
 
 _logger = logging.getLogger('ViewSocial')
+
+
+# hardcoded values - fix this
+IRC_bundle_id = 'org.sugarlabs.IRC'
+IRC_activity_id = 'e0b1caade25cd70fecf2548c95b2ffd81b3f5a52'
 
 
 def setup_view_social(activity):
@@ -67,11 +74,17 @@ class ViewSocial(Gtk.Window):
         # TODO: display a context dependent label
         sugar_irc_label = Gtk.Label(_("IRC channel #sugar"))
         sugar_irc_button = Gtk.Button(_("Connect"))
+        sugar_irc_button.connect('clicked', self.__connect_button_clicked_cb)
         # TODO: this is a draft UI design (maybe even the lack of it)
         vbox.pack_start(sugar_irc_label, False, False, 0)
         vbox.pack_start(sugar_irc_button, False, False, 0)
         sugar_irc_label.show()
         sugar_irc_button.show()
+
+    def __connect_button_clicked_cb(self, widget):
+        bundle = bundleregistry.get_registry().get_bundle(IRC_bundle_id)
+        launch(bundle, activity_id=IRC_activity_id)
+        self.destroy()
 
     def __stop_clicked_cb(self, widget):
         self.destroy()
