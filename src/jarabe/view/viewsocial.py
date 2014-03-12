@@ -34,19 +34,14 @@ def setup_view_social(activity):
         _logger.error('Activity without a window xid')
         return
 
-    bundle_path = activity.get_bundle_path()
-    if bundle_path is None:
-        _logger.debug('Activity has no bundle_path')
-        return
-
-    view_social = ViewSocial(window_xid, bundle_path, activity.get_title())
+    view_social = ViewSocial(window_xid, activity.get_title())
     view_social.show()
 
 
 class ViewSocial(Gtk.Window):
     __gtype_name__ = 'SugarViewSocial'
 
-    def __init__(self, window_xid, bundle_path, title):
+    def __init__(self, window_xid, title):
         Gtk.Window.__init__(self)
 
         self.set_decorated(False)
