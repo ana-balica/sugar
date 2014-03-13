@@ -21,6 +21,7 @@ from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Gdk
 
+from sugar3.activity import activityfactory
 from sugar3.graphics import style
 from sugar3.graphics.toolbutton import ToolButton
 
@@ -31,8 +32,8 @@ _logger = logging.getLogger('ViewSocial')
 
 
 # hardcoded values - fix this
-IRC_bundle_id = 'org.sugarlabs.IRC'
-IRC_activity_id = 'e0b1caade25cd70fecf2548c95b2ffd81b3f5a52'
+IRC_BUNDLE_ID = 'org.sugarlabs.IRC'
+WEB_BUNDLE_ID = "org.laptop.WebActivity"
 
 
 def setup_view_social(activity):
@@ -75,15 +76,27 @@ class ViewSocial(Gtk.Window):
         sugar_irc_label = Gtk.Label(_("IRC channel #sugar"))
         sugar_irc_button = Gtk.Button(_("Connect"))
         sugar_irc_button.connect('clicked', self.__connect_button_clicked_cb)
+        sugar_forum_label = Gtk.Label(_("Forum discussions"))
+        sugar_forum_button = Gtk.Button(_("Join"))
+        sugar_forum_button.connect('clicked', self.__connect_button_clicked_cb)
         # TODO: this is a draft UI design (maybe even the lack of it)
         vbox.pack_start(sugar_irc_label, False, False, 0)
         vbox.pack_start(sugar_irc_button, False, False, 0)
-        sugar_irc_label.show()
-        sugar_irc_button.show()
+        vbox.pack_start(sugar_forum_label, False, False, 0)
+        vbox.pack_start(sugar_forum_button, False, False, 0)
+        vbox.show_all()
 
     def __connect_button_clicked_cb(self, widget):
-        bundle = bundleregistry.get_registry().get_bundle(IRC_bundle_id)
-        launch(bundle, activity_id=IRC_activity_id)
+        activity_id = activityfactory.create_activity_id()
+        label = widget.get_label()
+        if label == "Connect":
+            bundle = bundleregistry.get_registry().get_bundle(IRC_BUNDLE_ID)
+            launch(bundle, activity_id=activity_id)
+        elif label == "Join":
+            bundle = bundleregistry.get_registry().get_bundle(WEB_BUNDLE_ID)
+            launch(bundle, activity_id=activity_id)
+        else:
+            _logger.error("No action attached to widget with label {0}".format(label))
         self.destroy()
 
     def __stop_clicked_cb(self, widget):
