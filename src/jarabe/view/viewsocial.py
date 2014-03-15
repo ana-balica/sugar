@@ -26,7 +26,8 @@ from sugar3.graphics import style
 from sugar3.graphics.toolbutton import ToolButton
 
 from jarabe.model import bundleregistry
-from jarabe.journal.misc import launch
+from jarabe.journal import model
+from jarabe.journal.misc import launch, resume
 
 _logger = logging.getLogger('ViewSocial')
 
@@ -34,6 +35,7 @@ _logger = logging.getLogger('ViewSocial')
 # hardcoded values - fix this
 IRC_BUNDLE_ID = 'org.sugarlabs.IRC'
 WEB_BUNDLE_ID = "org.laptop.WebActivity"
+WEB_UID = '2e3c72f3-479a-4b71-9a43-b6e30dbddd6b'
 
 
 def setup_view_social(activity):
@@ -93,10 +95,11 @@ class ViewSocial(Gtk.Window):
             bundle = bundleregistry.get_registry().get_bundle(IRC_BUNDLE_ID)
             launch(bundle, activity_id=activity_id)
         elif label == "Join":
-            bundle = bundleregistry.get_registry().get_bundle(WEB_BUNDLE_ID)
-            launch(bundle, activity_id=activity_id)
+            metadata = model.get(WEB_UID)
+            resume(metadata, WEB_BUNDLE_ID)
         else:
-            _logger.error("No action attached to widget with label {0}".format(label))
+            _logger.error(
+                "No action attached to widget with label {0}".format(label))
         self.destroy()
 
     def __stop_clicked_cb(self, widget):
